@@ -4,6 +4,8 @@
 
 REPORT_TO = [%w(wkreiling@mcclatchyinteractive.com sschnorr@mcclatchyinteractive.com)];
 REPORT_CC = [%w(developers@mcclatchyinteractive.com)];
+#REPORT_TO = [%w(ktowle@mcclatchyinteractive.com)];
+#REPORT_CC = [%w(ktowle@mcclatchyinteractive.com)];
 
 class ReportMailer < ActionMailer::Base
 
