@@ -8,11 +8,10 @@ require 'pp';
 require 'user';
 
 class JiraTicket
-#    JIRA_URL = "http://_JIRA_HOST_/sr/jira.issueviews:searchrequest-xml/_JIRA_FILTER_ID_/SearchRequest-_JIRA_FILTER_ID_.xml?tempMax=1000&os_username=_JIRA_USER_&os_password=_JIRA_PASS_";
     JIRA_URL = "http://_JIRA_HOST_/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=_JIRA_QUERY_&tempMax=1000&os_username=_JIRA_USER_&os_password=_JIRA_PASS_";
     attr_accessor :key, :summary, :type, :priority, :status,
                   :link, :description, :sub_tickets, :points,
-                  :assignee;
+                  :assignee, :fixVersion;
 
     SUB_TASK_TYPES = {'Sub-task' => 1, 'Spec Review' => 1, 'Bug found' => 1};
     ############################################################################          
@@ -36,7 +35,6 @@ class JiraTicket
         url.gsub!(/_JIRA_HOST_/, User.user.jira_host);
         url.gsub!(/_JIRA_USER_/, User.user.jira_username);
         url.gsub!(/_JIRA_PASS_/, User.user.jira_password);
-#        url.gsub!(/_JIRA_FILTER_ID_/, filter_id.to_s);
         url.gsub!(/_JIRA_QUERY_/, query);
 
         uri = URI.parse(url);
@@ -82,8 +80,22 @@ class JiraTicket
 
         item.each do |field|
             next unless field.is_a?(REXML::Element);
+
             if (t.respond_to?("#{field.name}="))
-                t.send("#{field.name}=", field.text);
+                # If it's already set, make it into an array and/or push new
+                # value onto existing array.
+                if (!t.send("#{field.name}").nil?)
+                    fld_val = t.send("#{field.name}");
+                    unless (fld_val.is_a?(Array))
+                        new_val = Array.new();
+                        new_val.push(fld_val); # Add current val.
+                        t.send("#{field.name}=", new_val);
+                        fld_val =  new_val;
+                    end
+                    fld_val.push(field.text); # Add New val.
+                else
+                    t.send("#{field.name}=", field.text);
+                end
             end
         end
         
@@ -108,6 +120,7 @@ class JiraTicket
         when 'Hold': 'red'
         when 'Code Review': 'blue'
         when 'Ready for QA': 'purple'
+        when 'Verified': 'darkgreen'
         else 'black'
         end
         
