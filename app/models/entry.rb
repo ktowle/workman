@@ -1,8 +1,6 @@
 ################################################################################
 # $Id: entry.rb 1720 2009-12-10 16:39:14Z ccaroon $
 ################################################################################
-require 'goal';
-
 class Entry < ActiveRecord::Base
 
     CATEGORY_CODE_REVIEW   = 'Code Review';
@@ -29,7 +27,9 @@ class Entry < ActiveRecord::Base
     validates_presence_of :description;
     validates_presence_of :category;
 
-    def before_create
+    before_create :set_entry_date_to_default;
+
+    def set_entry_date_to_default
         self.entry_date = Time.now() if self.entry_date.nil?
     end
 end

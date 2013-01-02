@@ -4,8 +4,7 @@
 
 <div style="padding-left:50px;padding-top:25px">
 
-<% form_for(User.user) do |f| %>
-    <div class="error_messages"><%= f.error_messages %></div>
+<%= form_for(User.user) do |f| %>
 
     <div class="default" style="border:solid 1px gray;font-size:large">
         <b><%=  f.label :name %>:</b>

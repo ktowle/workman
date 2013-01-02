@@ -2,38 +2,23 @@
 # $Id: countdowns_controller.rb 1736 2009-12-17 18:58:35Z ccaroon $
 ################################################################################
 class CountdownsController < ApplicationController
+  
+    respond_to :html;
     ############################################################################
     def index
-        @countdowns = Countdown.find(:all, :order => 'target_date');
-
-        respond_to do |format|
-            format.html # index.html.erb
-            format.xml  { render :xml => @countdowns }
-        end
+        @countdowns = Countdown.order('target_date').all;
     end
     ############################################################################
     def show
-        @countdown = Countdown.find(params[:id])
-
-        respond_to do |format|
-            format.html # show.html.erb
-            format.xml  { render :xml => @countdown }
-        end
+        @countdown = Countdown.find(params[:id]);
     end
     ############################################################################
     def new
         @countdown = Countdown.new(:target_date => Time.now());
-
-        respond_to do |format|
-            format.html {render :template => 'countdowns/new_edit'}
-            format.xml  { render :xml => @countdown }
-        end
     end
     ############################################################################
     def edit
         @countdown = Countdown.find(params[:id]);
-
-        render :template => 'countdowns/new_edit';
     end
     ############################################################################
     def create
@@ -44,37 +29,32 @@ class CountdownsController < ApplicationController
             if @countdown.save
                 flash[:notice] = 'Countdown was successfully created.'
                 format.html { redirect_to(@countdown) }
-                format.xml  { render :xml => @countdown, :status => :created, :location => @countdown }
             else
                 format.html { render :action => "new" }
-                format.xml  { render :xml => @countdown.errors, :status => :unprocessable_entity }
             end
         end
     end
     ############################################################################
     def update
         params[:countdown][:target_date] = parse_out_target_date(params);
-        @countdown = Countdown.find(params[:id])
+        @countdown = Countdown.find(params[:id]);
 
         respond_to do |format|
             if @countdown.update_attributes(params[:countdown])
                 flash[:notice] = 'Countdown was successfully updated.'
                 format.html { redirect_to(@countdown) }
-                format.xml  { head :ok }
             else
                 format.html { render :action => "edit" }
-                format.xml  { render :xml => @countdown.errors, :status => :unprocessable_entity }
             end
         end
     end
     ############################################################################
     def destroy
-        @countdown = Countdown.find(params[:id])
-        @countdown.destroy
+        @countdown = Countdown.find(params[:id]);
+        @countdown.destroy;
 
         respond_to do |format|
             format.html { redirect_to(countdowns_url) }
-            format.xml  { head :ok }
         end
     end
     ############################################################################
