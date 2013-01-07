@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
     ############################################################################
     def update_email_config
 
-        ActionMailer::Base.delivery_method = self.email_type;
+        ActionMailer::Base.delivery_method = self.email_type.to_sym;
 
 
         if (self.email_type == 'smtp')
